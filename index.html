@@ -8,814 +8,319 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
   <style>
-    /* ─── TOKENS ─────────────────────────────────────────────────── */
     :root {
-      --bg:        #0d0d0d;
-      --bg2:       #141414;
-      --bg3:       #1a1a1a;
-      --border:    #2a2a2a;
-      --accent:    #d4b896;
-      --accent2:   #e8cdb0;
-      --accent-dim:#a8896e;
-      --text:      #e8e6e1;
-      --muted:     #888580;
-      --card:      #161616;
-      --radius:    12px;
-      --radius-lg: 20px;
-      --shadow:    0 4px 40px rgba(0,0,0,0.6);
-      --glow:      0 0 60px rgba(212,184,150,0.08);
-      --font-display: 'Syne', sans-serif;
-      --font-body:    'DM Sans', sans-serif;
-      --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+      --bg:#0d0d0d; --bg2:#141414; --bg3:#1a1a1a; --border:#2a2a2a;
+      --accent:#d4b896; --accent2:#e8cdb0; --accent-dim:#a8896e;
+      --text:#e8e6e1; --muted:#888580; --card:#161616;
+      --radius:12px; --radius-lg:20px;
+      --shadow:0 4px 40px rgba(0,0,0,0.6);
+      --glow:0 0 60px rgba(212,184,150,0.08);
+      --font-display:'Syne',sans-serif;
+      --font-body:'DM Sans',sans-serif;
+      --transition:0.35s cubic-bezier(0.4,0,0.2,1);
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+    img{display:block;width:100%;object-fit:cover;}
+    a{color:inherit;text-decoration:none;}
+    button{cursor:pointer;border:none;background:none;font:inherit;}
 
-    /* ─── RESET ──────────────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 16px;
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
-    img { display: block; width: 100%; }
-    a { color: inherit; text-decoration: none; }
-    button { cursor: pointer; border: none; background: none; font: inherit; }
+    /* LOADER */
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity .6s ease,visibility .6s ease;}
+    #loader.hidden{opacity:0;visibility:hidden;}
+    .loader-logo{font-family:var(--font-display);font-size:clamp(2rem,6vw,3.5rem);font-weight:800;letter-spacing:-.02em;color:var(--accent);}
+    .loader-bar{width:160px;height:2px;background:var(--border);border-radius:99px;overflow:hidden;}
+    .loader-bar-fill{height:100%;width:0;background:var(--accent);border-radius:99px;animation:loadFill 1.6s ease forwards;}
+    @keyframes loadFill{to{width:100%;}}
 
-    /* ─── LOADER ─────────────────────────────────────────────────── */
-    #loader {
-      position: fixed; inset: 0; z-index: 9999;
-      background: var(--bg);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 24px;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-    #loader.hidden { opacity: 0; visibility: hidden; }
-    .loader-logo {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--accent);
-    }
-    .loader-bar {
-      width: 160px; height: 2px;
-      background: var(--border);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .loader-bar-fill {
-      height: 100%; width: 0;
-      background: var(--accent);
-      border-radius: 99px;
-      animation: loadFill 1.6s ease forwards;
-    }
-    @keyframes loadFill { to { width: 100%; } }
+    /* NOISE */
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
 
-    /* ─── NOISE TEXTURE OVERLAY ──────────────────────────────────── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0;
-      opacity: 0.4;
-    }
+    /* NAVBAR */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 clamp(20px,5vw,60px);height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,.8);backdrop-filter:blur(20px);border-bottom:1px solid transparent;transition:border-color var(--transition),background var(--transition);}
+    nav.scrolled{border-bottom-color:var(--border);background:rgba(13,13,13,.97);}
+    .nav-logo{font-family:var(--font-display);font-weight:800;font-size:1.25rem;letter-spacing:.04em;color:var(--accent);}
+    .nav-logo span{color:var(--text);font-weight:400;}
+    .nav-links{display:flex;gap:36px;list-style:none;}
+    .nav-links a{font-size:.85rem;font-weight:500;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;transition:color var(--transition);position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--accent);transform:scaleX(0);transition:transform var(--transition);}
+    .nav-links a:hover{color:var(--accent);}
+    .nav-links a:hover::after{transform:scaleX(1);}
+    .nav-cta{padding:9px 22px;background:var(--accent);color:#1a1410;font-family:var(--font-display);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;border-radius:var(--radius);transition:background var(--transition),transform var(--transition),box-shadow var(--transition);}
+    .nav-cta:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(212,184,150,.25);}
+    .nav-hamburger{display:none;flex-direction:column;gap:5px;width:28px;cursor:pointer;}
+    .nav-hamburger span{display:block;height:2px;border-radius:99px;background:var(--text);transition:var(--transition);}
+    .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+    .nav-hamburger.open span:nth-child(2){opacity:0;}
+    .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+    .mobile-menu{position:fixed;top:68px;left:0;right:0;z-index:99;background:rgba(13,13,13,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:24px clamp(20px,5vw,60px);display:flex;flex-direction:column;gap:20px;transform:translateY(-110%);transition:transform var(--transition);}
+    .mobile-menu.open{transform:translateY(0);}
+    .mobile-menu a{font-size:1rem;font-weight:500;color:var(--muted);transition:color var(--transition);}
+    .mobile-menu a:hover{color:var(--accent);}
 
-    /* ─── NAVBAR ─────────────────────────────────────────────────── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 0 clamp(20px, 5vw, 60px);
-      height: 68px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(13,13,13,0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid transparent;
-      transition: border-color var(--transition), background var(--transition);
-    }
-    nav.scrolled {
-      border-bottom-color: var(--border);
-      background: rgba(13,13,13,0.95);
-    }
-    .nav-logo {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 1.25rem;
-      letter-spacing: 0.04em;
-      color: var(--accent);
-    }
-    .nav-logo span { color: var(--text); font-weight: 400; }
-    .nav-links {
-      display: flex; gap: 36px; list-style: none;
-    }
-    .nav-links a {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      transition: color var(--transition);
-      position: relative;
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute; bottom: -4px; left: 0; right: 0;
-      height: 1px; background: var(--accent);
-      transform: scaleX(0);
-      transition: transform var(--transition);
-    }
-    .nav-links a:hover { color: var(--accent); }
-    .nav-links a:hover::after { transform: scaleX(1); }
-    .nav-cta {
-      padding: 9px 22px;
-      background: var(--accent);
-      color: #1a1410;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.8rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      border-radius: var(--radius);
-      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-    }
-    .nav-cta:hover {
-      background: var(--accent2);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(212,184,150,0.25);
-    }
-    .nav-hamburger {
-      display: none;
-      flex-direction: column; gap: 5px;
-      width: 28px; cursor: pointer;
-    }
-    .nav-hamburger span {
-      display: block; height: 2px; border-radius: 99px;
-      background: var(--text);
-      transition: var(--transition);
-    }
-    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
-    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    /* SECTION HELPERS */
+    section{position:relative;z-index:1;}
+    .section-inner{max-width:1120px;margin:0 auto;padding:100px clamp(20px,5vw,60px);}
+    .section-label{display:inline-flex;align-items:center;gap:10px;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+    .section-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent);}
+    .section-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:16px;}
+    .section-title em{font-style:normal;-webkit-text-stroke:1px var(--accent);color:transparent;}
+    .section-sub{color:var(--muted);font-size:1.05rem;max-width:560px;line-height:1.7;}
+    .divider{width:48px;height:3px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:99px;margin:20px 0 48px;}
 
-    /* Mobile nav */
-    .mobile-menu {
-      position: fixed; top: 68px; left: 0; right: 0; z-index: 99;
-      background: rgba(13,13,13,0.98);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 24px clamp(20px,5vw,60px);
-      display: flex; flex-direction: column; gap: 20px;
-      transform: translateY(-110%);
-      transition: transform var(--transition);
-    }
-    .mobile-menu.open { transform: translateY(0); }
-    .mobile-menu a {
-      font-size: 1rem; font-weight: 500; color: var(--muted);
-      transition: color var(--transition);
-    }
-    .mobile-menu a:hover { color: var(--accent); }
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-delay-1{transition-delay:.1s;}
+    .reveal-delay-2{transition-delay:.2s;}
+    .reveal-delay-3{transition-delay:.3s;}
+    .reveal-delay-4{transition-delay:.4s;}
+    .reveal-delay-5{transition-delay:.5s;}
 
-    /* ─── SECTION HELPERS ────────────────────────────────────────── */
-    section { position: relative; z-index: 1; }
-    .section-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 100px clamp(20px,5vw,60px);
-    }
-    .section-label {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-    .section-label::before {
-      content: '';
-      display: block; width: 24px; height: 1px;
-      background: var(--accent);
-    }
-    .section-title {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 16px;
-    }
-    .section-title em {
-      font-style: normal;
-      -webkit-text-stroke: 1px var(--accent);
-      color: transparent;
-    }
-    .section-sub {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 560px;
-      line-height: 1.7;
-    }
-    .divider {
-      width: 48px; height: 3px;
-      background: linear-gradient(90deg, var(--accent), transparent);
-      border-radius: 99px;
-      margin: 20px 0 48px;
-    }
+    /* ══════════════════ HERO ══════════════════ */
+    #hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:120px clamp(20px,5vw,60px) 80px;max-width:1280px;margin:0 auto;position:relative;z-index:1;}
+    .hero-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(212,184,150,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,184,150,.03) 1px,transparent 1px);background-size:80px 80px;pointer-events:none;z-index:0;}
+    .hero-glow{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(212,184,150,.06) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none;z-index:0;animation:blobPulse 8s ease-in-out infinite;}
+    @keyframes blobPulse{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(-20px,20px)}}
+    .hero-text{position:relative;z-index:1;}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(212,184,150,.08);border:1px solid rgba(212,184,150,.2);border-radius:99px;padding:6px 16px;font-size:.8rem;font-weight:500;color:var(--accent);letter-spacing:.06em;margin-bottom:32px;}
+    .hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease infinite;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+    .hero-name{font-family:var(--font-display);font-size:clamp(3rem,7vw,5.5rem);font-weight:800;letter-spacing:-.04em;line-height:.95;margin-bottom:8px;}
+    .hero-name .line1{display:block;color:var(--text);}
+    .hero-name .line2{display:block;-webkit-text-stroke:1.5px var(--accent);color:transparent;}
+    .hero-tagline{font-size:clamp(.85rem,1.5vw,1rem);color:var(--muted);margin:20px 0 32px;max-width:420px;}
+    .hero-tagline strong{color:var(--accent-dim);font-weight:500;}
+    .hero-intro{font-size:.9rem;color:var(--muted);max-width:440px;margin-bottom:40px;line-height:1.8;}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:48px;}
+    .btn-primary{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;background:var(--accent);color:#1a1410;font-family:var(--font-display);font-weight:700;font-size:.88rem;letter-spacing:.04em;border-radius:var(--radius);transition:background var(--transition),transform var(--transition),box-shadow var(--transition);}
+    .btn-primary:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 12px 32px rgba(212,184,150,.3);}
+    .btn-secondary{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;background:transparent;color:var(--text);border:1px solid var(--border);font-family:var(--font-display);font-weight:600;font-size:.88rem;letter-spacing:.04em;border-radius:var(--radius);transition:border-color var(--transition),color var(--transition),transform var(--transition);}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+    .hero-stats{display:flex;gap:32px;flex-wrap:wrap;padding-top:32px;border-top:1px solid var(--border);}
+    .hero-stat-num{font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--accent);letter-spacing:-.03em;}
+    .hero-stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
 
-    /* ─── SCROLL REVEAL ──────────────────────────────────────────── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
-    .reveal-delay-5 { transition-delay: 0.5s; }
+    /* ── EMULATOR ── */
+    .hero-emulator{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:center;padding-left:40px;height:580px;}
+    .emu-label{position:absolute;top:0;left:50%;transform:translateX(-50%);background:rgba(212,184,150,.08);border:1px solid rgba(212,184,150,.15);border-radius:99px;padding:4px 14px;font-size:.65rem;color:var(--accent);letter-spacing:.08em;white-space:nowrap;}
 
-    /* ─── HERO ───────────────────────────────────────────────────── */
-    #hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      justify-content: center;
-      padding: 120px clamp(20px,5vw,60px) 80px;
-      overflow: hidden;
-    }
-    .hero-inner { max-width: 1120px; margin: 0 auto; width: 100%; }
+    /* Desktop monitor */
+    .desktop-frame{position:relative;width:360px;flex-shrink:0;}
+    .desktop-monitor{background:#1e1e1e;border:2px solid #3a3a3a;border-radius:12px 12px 0 0;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);}
+    .desktop-titlebar{background:#2a2a2a;padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a1a1a;}
+    .dt-dot{width:10px;height:10px;border-radius:50%;}
+    .dt-dot.red{background:#ff5f57;} .dt-dot.yellow{background:#febc2e;} .dt-dot.green{background:#28c840;}
+    .dt-url{flex:1;margin-left:10px;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:4px 10px;font-size:.62rem;color:var(--muted);font-family:monospace;}
+    .desktop-screen{height:256px;position:relative;overflow:hidden;background:#0d1117;}
+    .desktop-stand-stem{width:60px;height:18px;background:#2a2a2a;margin:0 auto;border-radius:0 0 4px 4px;}
+    .desktop-stand-base{width:120px;height:8px;background:#333;margin:0 auto;border-radius:0 0 6px 6px;}
+    /* desktop dots below stand */
+    .emu-dots{display:flex;gap:6px;justify-content:center;margin-top:14px;}
+    .emu-dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:background var(--transition),transform var(--transition);}
+    .emu-dot.active{background:var(--accent);transform:scale(1.3);}
 
-    /* Grid accent lines */
-    .hero-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(212,184,150,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(212,184,150,0.03) 1px, transparent 1px);
-      background-size: 80px 80px;
-      pointer-events: none;
-    }
-    /* Glow blob */
-    .hero-glow {
-      position: absolute;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(212,184,150,0.07) 0%, transparent 70%);
-      top: -100px; right: -100px;
-      pointer-events: none;
-      animation: blobPulse 8s ease-in-out infinite;
-    }
-    @keyframes blobPulse {
-      0%, 100% { transform: scale(1) translate(0,0); }
-      50% { transform: scale(1.1) translate(-20px, 20px); }
-    }
+    /* Mobile phone */
+    .mobile-frame{position:absolute;right:-24px;bottom:56px;width:136px;z-index:10;filter:drop-shadow(0 20px 40px rgba(0,0,0,.6));}
+    .mobile-phone{background:#1e1e1e;border:2px solid #3a3a3a;border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.05);}
+    .mobile-notch{height:20px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #2a2a2a;}
+    .mobile-notch-pill{width:40px;height:6px;background:#2a2a2a;border-radius:99px;}
+    .mobile-screen{height:220px;position:relative;overflow:hidden;background:#0d1117;}
+    .mobile-home-bar{height:18px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;border-top:1px solid #2a2a2a;}
+    .mobile-home-pill{width:40px;height:4px;background:#3a3a3a;border-radius:99px;}
 
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(212,184,150,0.08);
-      border: 1px solid rgba(212,184,150,0.2);
-      border-radius: 99px;
-      padding: 6px 16px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--accent);
-      letter-spacing: 0.06em;
-      margin-bottom: 32px;
-    }
-    .hero-eyebrow::before {
-      content: '';
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s ease infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
-    }
+    /* Shared slide fade */
+    .emu-slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;display:flex;align-items:center;justify-content:center;}
+    .emu-slide.active{opacity:1;}
+    .mock-screen{width:100%;height:100%;display:flex;flex-direction:column;font-family:var(--font-body);overflow:hidden;}
 
-    .hero-name {
-      font-family: var(--font-display);
-      font-size: clamp(3.5rem, 10vw, 7rem);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 0.95;
-      margin-bottom: 8px;
-    }
-    .hero-name .line1 { display: block; color: var(--text); }
-    .hero-name .line2 {
-      display: block;
-      -webkit-text-stroke: 1.5px var(--accent);
-      color: transparent;
-    }
+    /* Slide 1 — landing */
+    .mock-s1{background:linear-gradient(160deg,#0f1a0f 0%,#0d1a2a 100%);}
+    .mock-s1 .mock-header{padding:10px 14px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+    .mock-s1 .mock-logo{font-size:.68rem;font-weight:700;color:#f0b429;letter-spacing:.1em;}
+    .mock-s1 .mock-nav{display:flex;gap:10px;}
+    .mock-s1 .mock-nav span{font-size:.48rem;color:rgba(255,255,255,.4);}
+    .mock-s1 .mock-hero-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;gap:8px;}
+    .sun-icon{font-size:2.4rem;filter:drop-shadow(0 0 12px rgba(240,180,41,.6));animation:sunSpin 10s linear infinite;}
+    @keyframes sunSpin{to{transform:rotate(360deg)}}
+    .mock-s1 .mock-title{font-size:.72rem;font-weight:700;color:#f0f0f0;letter-spacing:-.01em;}
+    .mock-s1 .mock-sub{font-size:.48rem;color:rgba(255,255,255,.45);max-width:160px;}
+    .mock-s1 .mock-btn{margin-top:4px;padding:5px 14px;background:#f0b429;color:#1a1200;font-size:.52rem;font-weight:700;border-radius:6px;}
 
-    .hero-tagline {
-      font-size: clamp(0.95rem, 2vw, 1.15rem);
-      color: var(--muted);
-      margin: 24px 0 40px;
-      max-width: 480px;
-      letter-spacing: 0.01em;
-    }
-    .hero-tagline strong { color: var(--accent-dim); font-weight: 500; }
+    /* Slide 2 — appliance input */
+    .mock-s2{background:#0d1117;}
+    .mock-s2 .mock-topbar{padding:8px 12px;background:#161b22;border-bottom:1px solid #30363d;font-size:.56rem;color:#8b949e;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+    .mock-s2 .mock-rows{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .mock-s2 .mock-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#161b22;border:1px solid #30363d;border-radius:6px;}
+    .mock-s2 .mock-row-icon{font-size:.85rem;flex-shrink:0;}
+    .mock-s2 .mock-row-label{flex:1;font-size:.52rem;color:#cdd9e5;}
+    .mock-s2 .mock-row-val{font-size:.52rem;color:#f0b429;font-weight:600;}
+    .mock-s2 .mock-add-row{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px dashed #30363d;border-radius:6px;font-size:.48rem;color:#8b949e;}
 
-    .hero-intro {
-      font-size: clamp(0.9rem, 1.5vw, 1rem);
-      color: var(--muted);
-      max-width: 520px;
-      margin-bottom: 48px;
-      line-height: 1.8;
-    }
+    /* Slide 3 — results */
+    .mock-s3{background:#0d1117;}
+    .mock-s3 .mock-result-header{padding:10px 12px;background:#161b22;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between;}
+    .mock-s3 .mock-result-title{font-size:.58rem;font-weight:700;color:#f0f0f0;}
+    .mock-s3 .mock-result-badge{padding:2px 8px;background:rgba(240,180,41,.15);border:1px solid rgba(240,180,41,.3);border-radius:99px;font-size:.42rem;color:#f0b429;}
+    .mock-s3 .mock-result-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .mock-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .mock-result-item{padding:8px 10px;background:#161b22;border:1px solid #30363d;border-radius:6px;}
+    .mock-metric-label{font-size:.44rem;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;}
+    .mock-metric-value{font-size:.88rem;font-weight:700;color:#f0b429;font-family:var(--font-display);}
+    .mock-metric-unit{font-size:.42rem;color:rgba(240,180,41,.6);}
+    .mock-bar-wrap{margin-top:4px;}
+    .mock-bar-label{display:flex;justify-content:space-between;margin-bottom:3px;font-size:.42rem;color:#8b949e;}
+    .mock-bar{height:4px;background:#30363d;border-radius:99px;overflow:hidden;}
+    .mock-bar-fill{height:100%;background:linear-gradient(90deg,#f0b429,#ff8c00);border-radius:99px;}
 
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 16px; }
+    /* ══════════════════ ABOUT ══════════════════ */
+    #about{background:var(--bg2);}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+    .about-image-wrap{position:relative;}
+    .about-image-placeholder{aspect-ratio:4/5;background:var(--bg3);border-radius:var(--radius-lg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+    .about-image-placeholder::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,184,150,.06),transparent);}
+    .about-image-placeholder .placeholder-icon{font-size:4rem;opacity:.15;}
+    .about-image-badge{position:absolute;bottom:-20px;right:-20px;background:var(--accent);color:#1a1410;padding:18px 24px;border-radius:var(--radius);font-family:var(--font-display);font-weight:800;font-size:.85rem;line-height:1.3;text-align:center;box-shadow:var(--shadow);}
+    .about-image-badge span{display:block;font-size:1.8rem;font-weight:800;}
+    .about-content p{color:var(--muted);margin-bottom:20px;font-size:1rem;line-height:1.85;}
+    .about-content p strong{color:var(--text);font-weight:500;}
+    .skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:36px;}
+    .skill-pill{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;font-weight:500;transition:border-color var(--transition),background var(--transition);}
+    .skill-pill:hover{border-color:var(--accent-dim);background:rgba(212,184,150,.04);}
+    .skill-pill .skill-icon{font-size:1.1rem;flex-shrink:0;}
 
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 14px 32px;
-      background: var(--accent);
-      color: #1a1410;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
-      border-radius: var(--radius);
-      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-    }
-    .btn-primary:hover {
-      background: var(--accent2);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(212,184,150,0.3);
-    }
-    .btn-secondary {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 14px 32px;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
-      border-radius: var(--radius);
-      transition: border-color var(--transition), color var(--transition), transform var(--transition);
-    }
-    .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
+    /* ══════════════════ PROJECTS ══════════════════ */
+    #projects{background:var(--bg);}
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:28px;}
+    .project-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);display:flex;flex-direction:column;}
+    .project-card:hover{border-color:rgba(212,184,150,.35);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.5),var(--glow);}
 
-    .hero-stats {
-      display: flex; flex-wrap: wrap; gap: 40px;
-      margin-top: 72px;
-      padding-top: 40px;
-      border-top: 1px solid var(--border);
-    }
-    .hero-stat-num {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: -0.03em;
-    }
-    .hero-stat-label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+    /* Carousel */
+    .project-carousel{position:relative;height:220px;background:var(--bg3);overflow:hidden;}
+    .carousel-slide{position:absolute;inset:0;opacity:0;transition:opacity .5s ease;}
+    .carousel-slide.active{opacity:1;}
+    .carousel-slide img{width:100%;height:100%;object-fit:cover;}
+    .carousel-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg3);position:relative;}
+    .carousel-placeholder::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,184,150,.04),transparent);}
+    .carousel-placeholder-icon{font-size:2.8rem;opacity:.18;position:relative;z-index:1;}
+    .carousel-placeholder-text{font-size:.68rem;color:var(--muted);position:relative;z-index:1;text-align:center;padding:0 20px;}
+    .carousel-placeholder-add{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border:1px dashed rgba(212,184,150,.3);border-radius:99px;font-size:.62rem;color:var(--accent-dim);cursor:pointer;transition:border-color var(--transition),color var(--transition);}
+    .carousel-placeholder-add:hover{border-color:var(--accent);color:var(--accent);}
+    .carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:rgba(13,13,13,.75);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);color:var(--text);font-size:.85rem;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;opacity:0;transition:opacity var(--transition),background var(--transition);}
+    .carousel-arrow:hover{background:rgba(212,184,150,.2);}
+    .carousel-arrow.prev{left:10px;}
+    .carousel-arrow.next{right:10px;}
+    .project-carousel:hover .carousel-arrow{opacity:1;}
+    .carousel-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:10;}
+    .carousel-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:background var(--transition),transform var(--transition);}
+    .carousel-dot.active{background:var(--accent);transform:scale(1.4);}
+    .carousel-tag{position:absolute;top:12px;left:12px;z-index:10;background:rgba(13,13,13,.75);backdrop-filter:blur(8px);border:1px solid rgba(212,184,150,.2);color:var(--accent);font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:99px;}
+    .carousel-counter{position:absolute;top:12px;right:12px;z-index:10;background:rgba(13,13,13,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:.58rem;padding:4px 8px;border-radius:6px;}
 
-    /* ─── ABOUT ──────────────────────────────────────────────────── */
-    #about { background: var(--bg2); }
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-    }
-    .about-image-wrap {
-      position: relative;
-    }
-    .about-image-placeholder {
-      aspect-ratio: 4/5;
-      background: var(--bg3);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-    .about-image-placeholder::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(212,184,150,0.06), transparent);
-    }
-    .about-image-placeholder .placeholder-icon {
-      font-size: 4rem; opacity: 0.15;
-    }
-    .about-image-badge {
-      position: absolute;
-      bottom: -20px; right: -20px;
-      background: var(--accent);
-      color: #1a1410;
-      padding: 18px 24px;
-      border-radius: var(--radius);
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 0.85rem;
-      line-height: 1.3;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .about-image-badge span { display: block; font-size: 1.8rem; font-weight: 800; }
+    /* Upload zone */
+    .carousel-upload-zone{position:absolute;inset:0;z-index:20;background:rgba(13,13,13,.88);backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+    .carousel-upload-zone.visible{display:flex;}
+    .upload-title{font-size:.8rem;font-weight:600;color:var(--text);}
+    .upload-sub{font-size:.62rem;color:var(--muted);text-align:center;padding:0 24px;}
+    .upload-slots{display:flex;gap:10px;}
+    .upload-slot{width:62px;height:62px;border-radius:8px;border:1px dashed rgba(212,184,150,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color var(--transition),background var(--transition);}
+    .upload-slot:hover{border-color:var(--accent);background:rgba(212,184,150,.05);}
+    .upload-slot input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
+    .upload-slot .slot-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:none;}
+    .upload-slot .slot-emoji{transition:opacity .3s;}
+    .upload-actions{display:flex;gap:10px;align-items:center;}
+    .upload-done{padding:7px 20px;background:var(--accent);color:#1a1410;font-size:.72rem;font-weight:700;border-radius:8px;transition:background var(--transition);}
+    .upload-done:hover{background:var(--accent2);}
+    .upload-close{font-size:.62rem;color:var(--muted);cursor:pointer;transition:color var(--transition);}
+    .upload-close:hover{color:var(--accent);}
 
-    .about-content p {
-      color: var(--muted);
-      margin-bottom: 20px;
-      font-size: 1rem;
-      line-height: 1.85;
-    }
-    .about-content p strong { color: var(--text); font-weight: 500; }
+    /* Project body */
+    .project-body{padding:24px;flex:1;display:flex;flex-direction:column;}
+    .project-title{font-family:var(--font-display);font-size:1.12rem;font-weight:700;margin-bottom:10px;letter-spacing:-.02em;}
+    .project-desc{font-size:.86rem;color:var(--muted);line-height:1.75;flex:1;}
+    .project-stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+    .stack-tag{font-size:.67rem;font-weight:500;letter-spacing:.04em;padding:4px 10px;border:1px solid var(--border);border-radius:99px;color:var(--muted);background:var(--bg2);}
 
-    .skills-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 36px;
-    }
-    .skill-pill {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: border-color var(--transition), background var(--transition);
-    }
-    .skill-pill:hover {
-      border-color: var(--accent-dim);
-      background: rgba(212,184,150,0.04);
-    }
-    .skill-pill .skill-icon {
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
+    /* ══════════════════ GALLERY ══════════════════ */
+    #gallery{background:var(--bg2);}
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,220px);gap:16px;}
+    .gallery-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color var(--transition);}
+    .gallery-item:hover{border-color:var(--accent-dim);}
+    .gallery-item:first-child{grid-row:span 2;}
+    .gallery-item-icon{font-size:2.5rem;opacity:.15;}
+    .gallery-item-label{position:absolute;bottom:0;left:0;right:0;padding:20px 16px 14px;background:linear-gradient(to top,rgba(13,13,13,.9),transparent);font-size:.78rem;font-weight:600;color:var(--accent);letter-spacing:.04em;}
+    .gallery-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,184,150,.04),transparent);}
 
-    /* ─── PROJECTS ───────────────────────────────────────────────── */
-    #projects { background: var(--bg); }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 24px;
-    }
-    .project-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
-      display: flex; flex-direction: column;
-    }
-    .project-card:hover {
-      border-color: rgba(212,184,150,0.35);
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--glow);
-    }
-    .project-thumb {
-      height: 200px;
-      background: var(--bg3);
-      position: relative;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .project-thumb-icon { font-size: 3.5rem; opacity: 0.2; }
-    .project-thumb-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(22,22,22,0.9) 100%);
-    }
-    .project-thumb-tag {
-      position: absolute; top: 14px; left: 14px;
-      background: rgba(212,184,150,0.15);
-      border: 1px solid rgba(212,184,150,0.25);
-      color: var(--accent);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 99px;
-    }
-    .project-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
-    .project-title {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      letter-spacing: -0.02em;
-    }
-    .project-desc {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.75;
-      flex: 1;
-    }
-    .project-stack {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      margin-top: 20px;
-    }
-    .stack-tag {
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      padding: 4px 10px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      color: var(--muted);
-      background: var(--bg2);
-    }
+    /* ══════════════════ SERVICES ══════════════════ */
+    #services{background:var(--bg);}
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
+    .service-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;position:relative;overflow:hidden;transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);}
+    .service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity var(--transition);}
+    .service-card:hover{border-color:rgba(212,184,150,.3);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4);}
+    .service-card:hover::before{opacity:1;}
+    .service-icon{width:56px;height:56px;background:rgba(212,184,150,.08);border:1px solid rgba(212,184,150,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:24px;}
+    .service-title{font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:12px;letter-spacing:-.02em;}
+    .service-desc{font-size:.88rem;color:var(--muted);line-height:1.75;margin-bottom:20px;}
+    .service-features{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .service-features li{display:flex;align-items:center;gap:10px;font-size:.83rem;color:var(--muted);}
+    .service-features li::before{content:'→';color:var(--accent);font-size:.8rem;flex-shrink:0;}
 
-    /* ─── GALLERY ────────────────────────────────────────────────── */
-    #gallery { background: var(--bg2); }
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(2, 220px);
-      gap: 16px;
-    }
-    .gallery-item {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color var(--transition);
-    }
-    .gallery-item:hover { border-color: var(--accent-dim); }
-    .gallery-item:first-child { grid-row: span 2; }
-    .gallery-item-icon { font-size: 2.5rem; opacity: 0.15; }
-    .gallery-item-label {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 20px 16px 14px;
-      background: linear-gradient(to top, rgba(13,13,13,0.9), transparent);
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: 0.04em;
-    }
-    .gallery-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(212,184,150,0.04), transparent);
-    }
+    /* ══════════════════ CONTACT ══════════════════ */
+    #contact{background:var(--bg2);}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+    .contact-info p{color:var(--muted);font-size:1rem;line-height:1.8;margin-bottom:40px;}
+    .contact-channels{display:flex;flex-direction:column;gap:16px;}
+    .channel-btn{display:flex;align-items:center;gap:16px;padding:18px 24px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-weight:500;font-size:.95rem;transition:border-color var(--transition),background var(--transition),transform var(--transition);}
+    .channel-btn:hover{border-color:var(--accent-dim);background:rgba(212,184,150,.04);transform:translateX(4px);}
+    .channel-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+    .channel-icon.wa{background:rgba(37,211,102,.15);}
+    .channel-icon.mail{background:rgba(212,184,150,.1);}
+    .channel-meta{flex:1;}
+    .channel-label{font-size:.75rem;color:var(--muted);margin-bottom:2px;letter-spacing:.04em;text-transform:uppercase;}
+    .channel-value{font-weight:600;font-size:.95rem;}
+    .contact-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;}
+    .form-group{margin-bottom:20px;}
+    .form-label{display:block;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .form-input,.form-textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;color:var(--text);font:inherit;font-size:.95rem;transition:border-color var(--transition),box-shadow var(--transition);outline:none;resize:none;}
+    .form-input:focus,.form-textarea:focus{border-color:var(--accent-dim);box-shadow:0 0 0 3px rgba(212,184,150,.08);}
+    .form-input::placeholder,.form-textarea::placeholder{color:var(--muted);}
+    .form-textarea{min-height:120px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-submit{width:100%;padding:14px;background:var(--accent);color:#1a1410;font-family:var(--font-display);font-weight:700;font-size:.9rem;letter-spacing:.04em;border-radius:var(--radius);transition:background var(--transition),transform var(--transition),box-shadow var(--transition);margin-top:8px;}
+    .form-submit:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(212,184,150,.25);}
+    .form-success{display:none;text-align:center;padding:20px;color:var(--accent);font-weight:600;}
 
-    /* ─── SERVICES ───────────────────────────────────────────────── */
-    #services { background: var(--bg); }
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-    }
-    .service-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-      position: relative;
-      overflow: hidden;
-      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
-    }
-    .service-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0;
-      transition: opacity var(--transition);
-    }
-    .service-card:hover {
-      border-color: rgba(212,184,150,0.3);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
-    }
-    .service-card:hover::before { opacity: 1; }
-    .service-icon {
-      width: 56px; height: 56px;
-      background: rgba(212,184,150,0.08);
-      border: 1px solid rgba(212,184,150,0.15);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-      margin-bottom: 24px;
-    }
-    .service-title {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      letter-spacing: -0.02em;
-    }
-    .service-desc {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.75;
-      margin-bottom: 20px;
-    }
-    .service-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .service-features li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.83rem;
-      color: var(--muted);
-    }
-    .service-features li::before {
-      content: '→';
-      color: var(--accent);
-      font-size: 0.8rem;
-      flex-shrink: 0;
-    }
+    /* FOOTER */
+    footer{background:var(--bg);border-top:1px solid var(--border);padding:48px clamp(20px,5vw,60px);position:relative;z-index:1;}
+    .footer-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;}
+    .footer-logo{font-family:var(--font-display);font-weight:800;font-size:1.2rem;letter-spacing:.04em;color:var(--accent);}
+    .footer-tagline{font-size:.8rem;color:var(--muted);margin-top:4px;}
+    .footer-links{display:flex;gap:28px;}
+    .footer-links a{font-size:.82rem;color:var(--muted);transition:color var(--transition);}
+    .footer-links a:hover{color:var(--accent);}
+    .footer-copy{width:100%;padding-top:24px;border-top:1px solid var(--border);text-align:center;font-size:.78rem;color:var(--muted);}
 
-    /* ─── CONTACT ────────────────────────────────────────────────── */
-    #contact { background: var(--bg2); }
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: start;
-    }
-    .contact-info p {
-      color: var(--muted); font-size: 1rem; line-height: 1.8; margin-bottom: 40px;
-    }
-    .contact-channels { display: flex; flex-direction: column; gap: 16px; }
-    .channel-btn {
-      display: flex; align-items: center; gap: 16px;
-      padding: 18px 24px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--bg3);
-      color: var(--text);
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: border-color var(--transition), background var(--transition), transform var(--transition);
-    }
-    .channel-btn:hover {
-      border-color: var(--accent-dim);
-      background: rgba(212,184,150,0.04);
-      transform: translateX(4px);
-    }
-    .channel-icon {
-      width: 42px; height: 42px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    .channel-icon.wa { background: rgba(37,211,102,0.15); }
-    .channel-icon.mail { background: rgba(212,184,150,0.1); }
-    .channel-meta { flex: 1; }
-    .channel-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
-    .channel-value { font-weight: 600; font-size: 0.95rem; }
+    /* BACK TO TOP */
+    #backTop{position:fixed;bottom:28px;right:28px;z-index:90;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#1a1410;font-size:1.1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity var(--transition),transform var(--transition);transform:translateY(16px);}
+    #backTop.show{opacity:1;pointer-events:auto;transform:translateY(0);}
+    #backTop:hover{background:var(--accent2);transform:translateY(-2px);}
 
-    .contact-form {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-    }
-    .form-group { margin-bottom: 20px; }
-    .form-label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .form-input, .form-textarea {
-      width: 100%;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      color: var(--text);
-      font: inherit;
-      font-size: 0.95rem;
-      transition: border-color var(--transition), box-shadow var(--transition);
-      outline: none;
-      resize: none;
-    }
-    .form-input:focus, .form-textarea:focus {
-      border-color: var(--accent-dim);
-      box-shadow: 0 0 0 3px rgba(212,184,150,0.08);
-    }
-    .form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
-    .form-textarea { min-height: 120px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-submit {
-      width: 100%;
-      padding: 14px;
-      background: var(--accent);
-      color: #1a1410;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
-      border-radius: var(--radius);
-      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-      margin-top: 8px;
-    }
-    .form-submit:hover {
-      background: var(--accent2);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(212,184,150,0.25);
-    }
-    .form-success {
-      display: none;
-      text-align: center; padding: 20px;
-      color: var(--accent); font-weight: 600;
-    }
-
-    /* ─── FOOTER ─────────────────────────────────────────────────── */
-    footer {
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      padding: 48px clamp(20px,5vw,60px);
-      position: relative; z-index: 1;
-    }
-    .footer-inner {
-      max-width: 1120px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 24px;
-    }
-    .footer-logo {
-      font-family: var(--font-display);
-      font-weight: 800; font-size: 1.2rem;
-      letter-spacing: 0.04em;
-      color: var(--accent);
-    }
-    .footer-tagline { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
-    .footer-links { display: flex; gap: 28px; }
-    .footer-links a {
-      font-size: 0.82rem; color: var(--muted);
-      transition: color var(--transition);
-    }
-    .footer-links a:hover { color: var(--accent); }
-    .footer-copy {
-      width: 100%;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    /* ─── BACK TO TOP ────────────────────────────────────────────── */
-    #backTop {
-      position: fixed; bottom: 28px; right: 28px; z-index: 90;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--accent);
-      color: #1a1410;
-      font-size: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      opacity: 0; pointer-events: none;
-      transition: opacity var(--transition), transform var(--transition);
-      transform: translateY(16px);
-    }
-    #backTop.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    #backTop:hover { background: var(--accent2); transform: translateY(-2px); }
-
-    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .about-grid,
-      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
-      .about-image-wrap { display: none; }
-      .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, 180px);
-      }
-      .gallery-item:first-child { grid-row: span 1; }
-      .nav-links, .nav-cta { display: none; }
-      .nav-hamburger { display: flex; }
-    }
-    @media (max-width: 600px) {
-      .projects-grid { grid-template-columns: 1fr; }
-      .services-grid { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .skills-grid { grid-template-columns: 1fr; }
-      .gallery-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(6, 160px);
-      }
-      .hero-stats { gap: 24px; }
-    }
+    /* RESPONSIVE */
+    @media(max-width:1024px){#hero{grid-template-columns:1fr;padding-bottom:60px;}.hero-emulator{display:none;}}
+    @media(max-width:900px){.about-grid,.contact-grid{grid-template-columns:1fr;gap:48px;}.about-image-wrap{display:none;}.gallery-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,180px);}.gallery-item:first-child{grid-row:span 1;}.nav-links,.nav-cta{display:none;}.nav-hamburger{display:flex;}}
+    @media(max-width:600px){.projects-grid,.services-grid{grid-template-columns:1fr;}.form-row{grid-template-columns:1fr;}.skills-grid{grid-template-columns:1fr;}.gallery-grid{grid-template-columns:1fr;grid-template-rows:repeat(6,160px);}.hero-stats{gap:24px;}}
   </style>
 </head>
 <body>
 
-  <!-- ── LOADER ──────────────────────────────────────────────────── -->
+  <!-- LOADER -->
   <div id="loader">
     <div class="loader-logo">BMS TECH</div>
     <div class="loader-bar"><div class="loader-bar-fill"></div></div>
   </div>
 
-  <!-- ── NAVBAR ──────────────────────────────────────────────────── -->
+  <!-- NAVBAR -->
   <nav id="navbar">
     <div class="nav-logo">BMS<span> TECH</span></div>
     <ul class="nav-links">
@@ -826,12 +331,8 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Hire Me</a>
-    <div class="nav-hamburger" id="hamburger" role="button" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
   </nav>
-
-  <!-- Mobile menu -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="#about" class="mobile-link">About</a>
     <a href="#projects" class="mobile-link">Projects</a>
@@ -840,11 +341,13 @@
     <a href="#contact" class="mobile-link">Contact</a>
   </div>
 
-  <!-- ── HERO ────────────────────────────────────────────────────── -->
-  <section id="hero">
+  <!-- ══════════════════════════ HERO ══════════════════════════ -->
+  <section id="hero" style="position:relative;z-index:1;">
     <div class="hero-grid"></div>
     <div class="hero-glow"></div>
-    <div class="hero-inner">
+
+    <!-- LEFT TEXT -->
+    <div class="hero-text">
       <div class="hero-eyebrow reveal">Available for new projects</div>
       <h1 class="hero-name reveal reveal-delay-1">
         <span class="line1">BMS</span>
@@ -856,64 +359,155 @@
         <strong>Device Consultant</strong>
       </p>
       <p class="hero-intro reveal reveal-delay-3">
-        We build smart digital solutions, provide reliable tech support, and supply
-        quality devices — bridging the gap between great technology and everyday people.
+        We build smart digital solutions, provide reliable tech support, and supply quality devices — bridging the gap between great technology and everyday people.
       </p>
       <div class="hero-actions reveal reveal-delay-4">
-        <a href="#contact" class="btn-primary">
-          ✉ Contact Me
-        </a>
-        <a href="#projects" class="btn-secondary">
-          View Projects →
-        </a>
+        <a href="#contact" class="btn-primary">✉ Contact Me</a>
+        <a href="#projects" class="btn-secondary">View Projects →</a>
       </div>
       <div class="hero-stats reveal reveal-delay-5">
-        <div>
-          <div class="hero-stat-num">3+</div>
-          <div class="hero-stat-label">Years Experience</div>
+        <div><div class="hero-stat-num">3+</div><div class="hero-stat-label">Years Experience</div></div>
+        <div><div class="hero-stat-num">20+</div><div class="hero-stat-label">Projects Shipped</div></div>
+        <div><div class="hero-stat-num">100%</div><div class="hero-stat-label">Client Satisfaction</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT EMULATOR -->
+    <div class="hero-emulator reveal reveal-delay-3">
+      <div class="emu-label">☀ Solar Energy Calculator — Live Preview</div>
+
+      <!-- Desktop -->
+      <div class="desktop-frame">
+        <div class="desktop-monitor">
+          <div class="desktop-titlebar">
+            <div class="dt-dot red"></div>
+            <div class="dt-dot yellow"></div>
+            <div class="dt-dot green"></div>
+            <div class="dt-url">chybonsolar.github.io/calculator</div>
+          </div>
+          <div class="desktop-screen" id="desktopScreen">
+            <div class="emu-slide active" id="ds0">
+              <div class="mock-screen mock-s1">
+                <div class="mock-header">
+                  <span class="mock-logo">⚡ CHYBON SOLAR</span>
+                  <div class="mock-nav"><span>Home</span><span>Calculator</span><span>Contact</span></div>
+                </div>
+                <div class="mock-hero-content">
+                  <div class="sun-icon">☀️</div>
+                  <div class="mock-title">Solar Energy Calculator</div>
+                  <div class="mock-sub">Size your perfect off-grid solar system in minutes</div>
+                  <div class="mock-btn">Get Started →</div>
+                </div>
+              </div>
+            </div>
+            <div class="emu-slide" id="ds1">
+              <div class="mock-screen mock-s2">
+                <div class="mock-topbar">📋 Step 1 — Add Your Appliances</div>
+                <div class="mock-rows">
+                  <div class="mock-row"><span class="mock-row-icon">💡</span><span class="mock-row-label">LED Bulbs (×6)</span><span class="mock-row-val">36W · 8h</span></div>
+                  <div class="mock-row"><span class="mock-row-icon">📺</span><span class="mock-row-label">Smart TV</span><span class="mock-row-val">120W · 5h</span></div>
+                  <div class="mock-row"><span class="mock-row-icon">❄️</span><span class="mock-row-label">Refrigerator</span><span class="mock-row-val">200W · 12h</span></div>
+                  <div class="mock-row"><span class="mock-row-icon">🌬️</span><span class="mock-row-label">Standing Fan</span><span class="mock-row-val">75W · 10h</span></div>
+                  <div class="mock-add-row">＋ Add appliance</div>
+                </div>
+              </div>
+            </div>
+            <div class="emu-slide" id="ds2">
+              <div class="mock-screen mock-s3">
+                <div class="mock-result-header">
+                  <span class="mock-result-title">⚡ Sizing Results</span>
+                  <span class="mock-result-badge">✓ Calculated</span>
+                </div>
+                <div class="mock-result-body">
+                  <div class="mock-result-grid">
+                    <div class="mock-result-item"><div class="mock-metric-label">Solar Panels</div><div class="mock-metric-value">4 <span class="mock-metric-unit">× 300W</span></div></div>
+                    <div class="mock-result-item"><div class="mock-metric-label">Battery Bank</div><div class="mock-metric-value">200 <span class="mock-metric-unit">Ah</span></div></div>
+                    <div class="mock-result-item"><div class="mock-metric-label">Daily Load</div><div class="mock-metric-value">4.3 <span class="mock-metric-unit">kWh</span></div></div>
+                    <div class="mock-result-item"><div class="mock-metric-label">Inverter</div><div class="mock-metric-value">2 <span class="mock-metric-unit">kVA</span></div></div>
+                  </div>
+                  <div class="mock-bar-wrap">
+                    <div class="mock-bar-label"><span>System Efficiency</span><span style="color:#f0b429">87%</span></div>
+                    <div class="mock-bar"><div class="mock-bar-fill" style="width:87%"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <div class="hero-stat-num">20+</div>
-          <div class="hero-stat-label">Projects Shipped</div>
+        <div class="desktop-stand-stem"></div>
+        <div class="desktop-stand-base"></div>
+        <div class="emu-dots" id="desktopDots">
+          <div class="emu-dot active" onclick="goToSlide(0)"></div>
+          <div class="emu-dot" onclick="goToSlide(1)"></div>
+          <div class="emu-dot" onclick="goToSlide(2)"></div>
         </div>
-        <div>
-          <div class="hero-stat-num">100%</div>
-          <div class="hero-stat-label">Client Satisfaction</div>
+      </div>
+
+      <!-- Mobile -->
+      <div class="mobile-frame">
+        <div class="mobile-phone">
+          <div class="mobile-notch"><div class="mobile-notch-pill"></div></div>
+          <div class="mobile-screen" id="mobileScreen">
+            <div class="emu-slide active" id="ms0">
+              <div class="mock-screen mock-s1" style="transform:scale(.76);transform-origin:top left;width:132%;height:132%;">
+                <div class="mock-header"><span class="mock-logo" style="font-size:.5rem;">⚡ CHYBON</span></div>
+                <div class="mock-hero-content">
+                  <div class="sun-icon" style="font-size:1.6rem;">☀️</div>
+                  <div class="mock-title" style="font-size:.55rem;">Solar Calculator</div>
+                  <div class="mock-sub" style="font-size:.38rem;">Size your system fast</div>
+                  <div class="mock-btn" style="font-size:.42rem;padding:3px 9px;">Start →</div>
+                </div>
+              </div>
+            </div>
+            <div class="emu-slide" id="ms1">
+              <div class="mock-screen mock-s2" style="transform:scale(.76);transform-origin:top left;width:132%;height:132%;">
+                <div class="mock-topbar" style="font-size:.45rem;padding:5px 9px;">📋 Add Appliances</div>
+                <div class="mock-rows" style="padding:5px 8px;gap:4px;">
+                  <div class="mock-row" style="padding:4px 7px;"><span class="mock-row-icon" style="font-size:.7rem;">💡</span><span class="mock-row-label" style="font-size:.4rem;">LED Bulbs</span><span class="mock-row-val" style="font-size:.4rem;">36W</span></div>
+                  <div class="mock-row" style="padding:4px 7px;"><span class="mock-row-icon" style="font-size:.7rem;">📺</span><span class="mock-row-label" style="font-size:.4rem;">Smart TV</span><span class="mock-row-val" style="font-size:.4rem;">120W</span></div>
+                  <div class="mock-row" style="padding:4px 7px;"><span class="mock-row-icon" style="font-size:.7rem;">❄️</span><span class="mock-row-label" style="font-size:.4rem;">Refrigerator</span><span class="mock-row-val" style="font-size:.4rem;">200W</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="emu-slide" id="ms2">
+              <div class="mock-screen mock-s3" style="transform:scale(.76);transform-origin:top left;width:132%;height:132%;">
+                <div class="mock-result-header" style="padding:6px 9px;">
+                  <span class="mock-result-title" style="font-size:.46rem;">⚡ Results</span>
+                  <span class="mock-result-badge" style="font-size:.36rem;">✓ Done</span>
+                </div>
+                <div class="mock-result-body" style="padding:7px 9px;gap:5px;">
+                  <div class="mock-result-grid" style="gap:4px;">
+                    <div class="mock-result-item" style="padding:5px 7px;"><div class="mock-metric-label" style="font-size:.34rem;">Panels</div><div class="mock-metric-value" style="font-size:.7rem;">4 <span class="mock-metric-unit" style="font-size:.3rem;">×300W</span></div></div>
+                    <div class="mock-result-item" style="padding:5px 7px;"><div class="mock-metric-label" style="font-size:.34rem;">Battery</div><div class="mock-metric-value" style="font-size:.7rem;">200 <span class="mock-metric-unit" style="font-size:.3rem;">Ah</span></div></div>
+                  </div>
+                  <div class="mock-bar-wrap">
+                    <div class="mock-bar-label" style="font-size:.34rem;"><span>Efficiency</span><span style="color:#f0b429">87%</span></div>
+                    <div class="mock-bar" style="height:3px;"><div class="mock-bar-fill" style="width:87%"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mobile-home-bar"><div class="mobile-home-pill"></div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── ABOUT ───────────────────────────────────────────────────── -->
+  <!-- ══════════════════════════ ABOUT ══════════════════════════ -->
   <section id="about">
     <div class="section-inner">
       <div class="about-grid">
         <div class="about-image-wrap reveal">
-          <div class="about-image-placeholder">
-            <span class="placeholder-icon">👨‍💻</span>
-          </div>
-          <div class="about-image-badge">
-            <span>100%</span>
-            Client Satisfaction
-          </div>
+          <div class="about-image-placeholder"><span class="placeholder-icon">👨‍💻</span></div>
+          <div class="about-image-badge"><span>100%</span>Client Satisfaction</div>
         </div>
         <div class="about-content">
           <div class="section-label reveal">About BMS Tech</div>
-          <h2 class="section-title reveal">
-            Building tech that <em>works</em> for you
-          </h2>
+          <h2 class="section-title reveal">Building tech that <em>works</em> for you</h2>
           <div class="divider reveal"></div>
-          <p class="reveal">
-            BMS Tech is a one-stop technology solutions provider based in Nigeria.
-            We combine <strong>professional web development</strong>, <strong>hardware consultancy</strong>,
-            and <strong>hands-on tech support</strong> to deliver real value for individuals and businesses.
-          </p>
-          <p class="reveal">
-            From powering businesses with custom web applications to solving day-to-day
-            device challenges — we speak your language and deliver results you can see.
-            We also specialize in <strong>solar energy solutions</strong>, helping clients
-            monitor, size, and manage their off-grid power systems.
-          </p>
+          <p class="reveal">BMS Tech is a one-stop technology solutions provider based in Nigeria. We combine <strong>professional web development</strong>, <strong>hardware consultancy</strong>, and <strong>hands-on tech support</strong> to deliver real value.</p>
+          <p class="reveal">From powering businesses with custom web applications to solving day-to-day device challenges — we speak your language and deliver results you can see. We also specialize in <strong>solar energy solutions</strong>, helping clients size and manage their off-grid power systems.</p>
           <div class="skills-grid reveal">
             <div class="skill-pill"><span class="skill-icon">🌐</span> Web Development</div>
             <div class="skill-pill"><span class="skill-icon">🔧</span> Tech Support</div>
@@ -927,152 +521,188 @@
     </div>
   </section>
 
-  <!-- ── PROJECTS ────────────────────────────────────────────────── -->
+  <!-- ══════════════════════════ PROJECTS ══════════════════════════ -->
   <section id="projects">
     <div class="section-inner">
       <div class="section-label reveal">Portfolio</div>
       <h2 class="section-title reveal">Featured <em>Projects</em></h2>
-      <p class="section-sub reveal">
-        Real-world tools and applications built for clients and personal use —
-        focused on performance, clarity, and usability.
-      </p>
+      <p class="section-sub reveal">Click <strong style="color:var(--accent)">＋ Add Screenshots</strong> on any project card to upload up to 3 screenshots from your device.</p>
       <div class="divider reveal"></div>
       <div class="projects-grid">
 
-        <!-- Project 1 -->
+        <!-- Card template — repeated 6× with unique IDs -->
+
+        <!-- 0: Solar Calculator -->
         <div class="project-card reveal">
-          <div class="project-thumb">
-            <span class="project-thumb-icon">☀️</span>
-            <div class="project-thumb-overlay"></div>
-            <div class="project-thumb-tag">Client Project</div>
+          <div class="project-carousel" id="c0">
+            <div class="carousel-tag">Client Project</div>
+            <div class="carousel-counter" id="cn0">1 / 3</div>
+            <div class="carousel-slide active"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">☀️</span><span class="carousel-placeholder-text">Solar Energy Calculator</span><span class="carousel-placeholder-add" onclick="openUpload(0)">＋ Add Screenshots</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📊</span><span class="carousel-placeholder-text">Screenshot 2</span><span class="carousel-placeholder-add" onclick="openUpload(0)">＋ Add Image</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📈</span><span class="carousel-placeholder-text">Screenshot 3</span><span class="carousel-placeholder-add" onclick="openUpload(0)">＋ Add Image</span></div></div>
+            <button class="carousel-arrow prev" onclick="cPrev(0)">‹</button>
+            <button class="carousel-arrow next" onclick="cNext(0)">›</button>
+            <div class="carousel-dots" id="cd0"><div class="carousel-dot active" onclick="cGoto(0,0)"></div><div class="carousel-dot" onclick="cGoto(0,1)"></div><div class="carousel-dot" onclick="cGoto(0,2)"></div></div>
+            <div class="carousel-upload-zone" id="uz0">
+              <div class="upload-title">Upload Screenshots</div>
+              <div class="upload-sub">Click each slot — up to 3 images. Shown in the carousel above.</div>
+              <div class="upload-slots">
+                <div class="upload-slot" id="us0-0"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(0,0,this)"><img class="slot-thumb" id="ut0-0"/></div>
+                <div class="upload-slot" id="us0-1"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(0,1,this)"><img class="slot-thumb" id="ut0-1"/></div>
+                <div class="upload-slot" id="us0-2"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(0,2,this)"><img class="slot-thumb" id="ut0-2"/></div>
+              </div>
+              <div class="upload-actions"><button class="upload-done" onclick="applyAndClose(0)">Apply ✓</button><span class="upload-close" onclick="closeUpload(0)">Cancel</span></div>
+            </div>
           </div>
           <div class="project-body">
             <h3 class="project-title">Solar Energy Calculator App</h3>
-            <p class="project-desc">
-              A comprehensive solar sizing calculator built for Chybon Solar Energy Ltd.
-              Features appliance-based load analysis, panel and battery sizing,
-              split energy calculation columns, and downloadable results —
-              based on the client's proprietary Excel methodology.
-            </p>
-            <div class="project-stack">
-              <span class="stack-tag">HTML</span>
-              <span class="stack-tag">CSS</span>
-              <span class="stack-tag">JavaScript</span>
-              <span class="stack-tag">GitHub Pages</span>
-            </div>
+            <p class="project-desc">A comprehensive solar sizing calculator for Chybon Solar Energy Ltd. Features appliance-based load analysis, panel and battery sizing, split energy columns, and downloadable results.</p>
+            <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">CSS</span><span class="stack-tag">JavaScript</span><span class="stack-tag">GitHub Pages</span></div>
           </div>
         </div>
 
-        <!-- Project 2 -->
+        <!-- 1: SolarTrack -->
         <div class="project-card reveal reveal-delay-1">
-          <div class="project-thumb">
-            <span class="project-thumb-icon">📦</span>
-            <div class="project-thumb-overlay"></div>
-            <div class="project-thumb-tag">Client Project</div>
+          <div class="project-carousel" id="c1">
+            <div class="carousel-tag">Client Project</div>
+            <div class="carousel-counter" id="cn1">1 / 3</div>
+            <div class="carousel-slide active"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📦</span><span class="carousel-placeholder-text">SolarTrack Inventory App</span><span class="carousel-placeholder-add" onclick="openUpload(1)">＋ Add Screenshots</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">🔍</span><span class="carousel-placeholder-text">Screenshot 2</span><span class="carousel-placeholder-add" onclick="openUpload(1)">＋ Add Image</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📋</span><span class="carousel-placeholder-text">Screenshot 3</span><span class="carousel-placeholder-add" onclick="openUpload(1)">＋ Add Image</span></div></div>
+            <button class="carousel-arrow prev" onclick="cPrev(1)">‹</button>
+            <button class="carousel-arrow next" onclick="cNext(1)">›</button>
+            <div class="carousel-dots" id="cd1"><div class="carousel-dot active" onclick="cGoto(1,0)"></div><div class="carousel-dot" onclick="cGoto(1,1)"></div><div class="carousel-dot" onclick="cGoto(1,2)"></div></div>
+            <div class="carousel-upload-zone" id="uz1">
+              <div class="upload-title">Upload Screenshots</div>
+              <div class="upload-sub">Click each slot — up to 3 images.</div>
+              <div class="upload-slots">
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(1,0,this)"><img class="slot-thumb" id="ut1-0"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(1,1,this)"><img class="slot-thumb" id="ut1-1"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(1,2,this)"><img class="slot-thumb" id="ut1-2"/></div>
+              </div>
+              <div class="upload-actions"><button class="upload-done" onclick="applyAndClose(1)">Apply ✓</button><span class="upload-close" onclick="closeUpload(1)">Cancel</span></div>
+            </div>
           </div>
           <div class="project-body">
             <h3 class="project-title">Solar Inventory Management App</h3>
-            <p class="project-desc">
-              A barcode-based inventory management system for Chybon Solar Energy Ltd,
-              enabling real-time stock tracking, role-based authentication,
-              and comprehensive reporting for solar equipment and accessories.
-            </p>
-            <div class="project-stack">
-              <span class="stack-tag">Node.js</span>
-              <span class="stack-tag">Express</span>
-              <span class="stack-tag">PostgreSQL</span>
-              <span class="stack-tag">JWT</span>
-              <span class="stack-tag">Railway</span>
-            </div>
+            <p class="project-desc">Barcode-based inventory system with real-time stock tracking, role-based auth, and reporting for solar equipment and accessories.</p>
+            <div class="project-stack"><span class="stack-tag">Node.js</span><span class="stack-tag">Express</span><span class="stack-tag">PostgreSQL</span><span class="stack-tag">JWT</span><span class="stack-tag">Railway</span></div>
           </div>
         </div>
 
-        <!-- Project 3 -->
+        <!-- 2: MedSupply -->
         <div class="project-card reveal reveal-delay-2">
-          <div class="project-thumb">
-            <span class="project-thumb-icon">💊</span>
-            <div class="project-thumb-overlay"></div>
-            <div class="project-thumb-tag">Product Build</div>
+          <div class="project-carousel" id="c2">
+            <div class="carousel-tag">Product Build</div>
+            <div class="carousel-counter" id="cn2">1 / 3</div>
+            <div class="carousel-slide active"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">💊</span><span class="carousel-placeholder-text">MedSupply Platform</span><span class="carousel-placeholder-add" onclick="openUpload(2)">＋ Add Screenshots</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">🏥</span><span class="carousel-placeholder-text">Screenshot 2</span><span class="carousel-placeholder-add" onclick="openUpload(2)">＋ Add Image</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📦</span><span class="carousel-placeholder-text">Screenshot 3</span><span class="carousel-placeholder-add" onclick="openUpload(2)">＋ Add Image</span></div></div>
+            <button class="carousel-arrow prev" onclick="cPrev(2)">‹</button>
+            <button class="carousel-arrow next" onclick="cNext(2)">›</button>
+            <div class="carousel-dots" id="cd2"><div class="carousel-dot active" onclick="cGoto(2,0)"></div><div class="carousel-dot" onclick="cGoto(2,1)"></div><div class="carousel-dot" onclick="cGoto(2,2)"></div></div>
+            <div class="carousel-upload-zone" id="uz2">
+              <div class="upload-title">Upload Screenshots</div>
+              <div class="upload-sub">Click each slot — up to 3 images.</div>
+              <div class="upload-slots">
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(2,0,this)"><img class="slot-thumb" id="ut2-0"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(2,1,this)"><img class="slot-thumb" id="ut2-1"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(2,2,this)"><img class="slot-thumb" id="ut2-2"/></div>
+              </div>
+              <div class="upload-actions"><button class="upload-done" onclick="applyAndClose(2)">Apply ✓</button><span class="upload-close" onclick="closeUpload(2)">Cancel</span></div>
+            </div>
           </div>
           <div class="project-body">
             <h3 class="project-title">MedSupply Platform</h3>
-            <p class="project-desc">
-              A full B2B pharmaceutical marketplace prototype connecting buyers,
-              suppliers, pharmacists, and admins — complete with multi-role dashboards,
-              inventory management, and order workflows.
-            </p>
-            <div class="project-stack">
-              <span class="stack-tag">HTML</span>
-              <span class="stack-tag">CSS</span>
-              <span class="stack-tag">JavaScript</span>
-            </div>
+            <p class="project-desc">Full B2B pharmaceutical marketplace with multi-role dashboards for buyers, suppliers, pharmacists, and admins — including order workflows and inventory management.</p>
+            <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">CSS</span><span class="stack-tag">JavaScript</span></div>
           </div>
         </div>
 
-        <!-- Project 4 -->
+        <!-- 3: BMS PayLink -->
         <div class="project-card reveal reveal-delay-3">
-          <div class="project-thumb">
-            <span class="project-thumb-icon">⛓️</span>
-            <div class="project-thumb-overlay"></div>
-            <div class="project-thumb-tag">Blockchain</div>
+          <div class="project-carousel" id="c3">
+            <div class="carousel-tag">Blockchain</div>
+            <div class="carousel-counter" id="cn3">1 / 3</div>
+            <div class="carousel-slide active"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">⛓️</span><span class="carousel-placeholder-text">BMS PayLink</span><span class="carousel-placeholder-add" onclick="openUpload(3)">＋ Add Screenshots</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">💸</span><span class="carousel-placeholder-text">Screenshot 2</span><span class="carousel-placeholder-add" onclick="openUpload(3)">＋ Add Image</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">🔗</span><span class="carousel-placeholder-text">Screenshot 3</span><span class="carousel-placeholder-add" onclick="openUpload(3)">＋ Add Image</span></div></div>
+            <button class="carousel-arrow prev" onclick="cPrev(3)">‹</button>
+            <button class="carousel-arrow next" onclick="cNext(3)">›</button>
+            <div class="carousel-dots" id="cd3"><div class="carousel-dot active" onclick="cGoto(3,0)"></div><div class="carousel-dot" onclick="cGoto(3,1)"></div><div class="carousel-dot" onclick="cGoto(3,2)"></div></div>
+            <div class="carousel-upload-zone" id="uz3">
+              <div class="upload-title">Upload Screenshots</div>
+              <div class="upload-sub">Click each slot — up to 3 images.</div>
+              <div class="upload-slots">
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(3,0,this)"><img class="slot-thumb" id="ut3-0"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(3,1,this)"><img class="slot-thumb" id="ut3-1"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(3,2,this)"><img class="slot-thumb" id="ut3-2"/></div>
+              </div>
+              <div class="upload-actions"><button class="upload-done" onclick="applyAndClose(3)">Apply ✓</button><span class="upload-close" onclick="closeUpload(3)">Cancel</span></div>
+            </div>
           </div>
           <div class="project-body">
             <h3 class="project-title">BMS PayLink</h3>
-            <p class="project-desc">
-              A Base blockchain payment link tool enabling instant crypto payments
-              via shareable links. Built with OnchainKit and wagmi, powered by
-              Supabase for link management and analytics.
-            </p>
-            <div class="project-stack">
-              <span class="stack-tag">Next.js</span>
-              <span class="stack-tag">wagmi</span>
-              <span class="stack-tag">OnchainKit</span>
-              <span class="stack-tag">Supabase</span>
-            </div>
+            <p class="project-desc">Base blockchain payment link tool enabling instant crypto payments via shareable links. Built with OnchainKit and wagmi, powered by Supabase for link management.</p>
+            <div class="project-stack"><span class="stack-tag">Next.js</span><span class="stack-tag">wagmi</span><span class="stack-tag">OnchainKit</span><span class="stack-tag">Supabase</span></div>
           </div>
         </div>
 
-        <!-- Project 5 -->
+        <!-- 4: Godwin Exchange -->
         <div class="project-card reveal reveal-delay-4">
-          <div class="project-thumb">
-            <span class="project-thumb-icon">💱</span>
-            <div class="project-thumb-overlay"></div>
-            <div class="project-thumb-tag">Web App</div>
+          <div class="project-carousel" id="c4">
+            <div class="carousel-tag">Web App</div>
+            <div class="carousel-counter" id="cn4">1 / 3</div>
+            <div class="carousel-slide active"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">💱</span><span class="carousel-placeholder-text">Godwin Exchange</span><span class="carousel-placeholder-add" onclick="openUpload(4)">＋ Add Screenshots</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📉</span><span class="carousel-placeholder-text">Screenshot 2</span><span class="carousel-placeholder-add" onclick="openUpload(4)">＋ Add Image</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">🌍</span><span class="carousel-placeholder-text">Screenshot 3</span><span class="carousel-placeholder-add" onclick="openUpload(4)">＋ Add Image</span></div></div>
+            <button class="carousel-arrow prev" onclick="cPrev(4)">‹</button>
+            <button class="carousel-arrow next" onclick="cNext(4)">›</button>
+            <div class="carousel-dots" id="cd4"><div class="carousel-dot active" onclick="cGoto(4,0)"></div><div class="carousel-dot" onclick="cGoto(4,1)"></div><div class="carousel-dot" onclick="cGoto(4,2)"></div></div>
+            <div class="carousel-upload-zone" id="uz4">
+              <div class="upload-title">Upload Screenshots</div>
+              <div class="upload-sub">Click each slot — up to 3 images.</div>
+              <div class="upload-slots">
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(4,0,this)"><img class="slot-thumb" id="ut4-0"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(4,1,this)"><img class="slot-thumb" id="ut4-1"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(4,2,this)"><img class="slot-thumb" id="ut4-2"/></div>
+              </div>
+              <div class="upload-actions"><button class="upload-done" onclick="applyAndClose(4)">Apply ✓</button><span class="upload-close" onclick="closeUpload(4)">Cancel</span></div>
+            </div>
           </div>
           <div class="project-body">
             <h3 class="project-title">Godwin Exchange</h3>
-            <p class="project-desc">
-              A real-time currency converter app with live exchange rates via
-              the Frankfurter API. Available as both a standalone HTML tool
-              and a React component for easy integration.
-            </p>
-            <div class="project-stack">
-              <span class="stack-tag">React</span>
-              <span class="stack-tag">HTML</span>
-              <span class="stack-tag">Frankfurter API</span>
-            </div>
+            <p class="project-desc">Real-time currency converter with live rates via the Frankfurter API. Available as a standalone HTML tool and React component for easy embedding.</p>
+            <div class="project-stack"><span class="stack-tag">React</span><span class="stack-tag">HTML</span><span class="stack-tag">Frankfurter API</span></div>
           </div>
         </div>
 
-        <!-- Project 6 -->
+        <!-- 5: Ministry Website -->
         <div class="project-card reveal reveal-delay-5">
-          <div class="project-thumb">
-            <span class="project-thumb-icon">⛪</span>
-            <div class="project-thumb-overlay"></div>
-            <div class="project-thumb-tag">Client Site</div>
+          <div class="project-carousel" id="c5">
+            <div class="carousel-tag">Client Site</div>
+            <div class="carousel-counter" id="cn5">1 / 3</div>
+            <div class="carousel-slide active"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">⛪</span><span class="carousel-placeholder-text">Wordsword Ministry Website</span><span class="carousel-placeholder-add" onclick="openUpload(5)">＋ Add Screenshots</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">📖</span><span class="carousel-placeholder-text">Screenshot 2</span><span class="carousel-placeholder-add" onclick="openUpload(5)">＋ Add Image</span></div></div>
+            <div class="carousel-slide"><div class="carousel-placeholder"><span class="carousel-placeholder-icon">✝️</span><span class="carousel-placeholder-text">Screenshot 3</span><span class="carousel-placeholder-add" onclick="openUpload(5)">＋ Add Image</span></div></div>
+            <button class="carousel-arrow prev" onclick="cPrev(5)">‹</button>
+            <button class="carousel-arrow next" onclick="cNext(5)">›</button>
+            <div class="carousel-dots" id="cd5"><div class="carousel-dot active" onclick="cGoto(5,0)"></div><div class="carousel-dot" onclick="cGoto(5,1)"></div><div class="carousel-dot" onclick="cGoto(5,2)"></div></div>
+            <div class="carousel-upload-zone" id="uz5">
+              <div class="upload-title">Upload Screenshots</div>
+              <div class="upload-sub">Click each slot — up to 3 images.</div>
+              <div class="upload-slots">
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(5,0,this)"><img class="slot-thumb" id="ut5-0"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(5,1,this)"><img class="slot-thumb" id="ut5-1"/></div>
+                <div class="upload-slot"><span class="slot-emoji">📷</span><input type="file" accept="image/*" onchange="handleImg(5,2,this)"><img class="slot-thumb" id="ut5-2"/></div>
+              </div>
+              <div class="upload-actions"><button class="upload-done" onclick="applyAndClose(5)">Apply ✓</button><span class="upload-close" onclick="closeUpload(5)">Cancel</span></div>
+            </div>
           </div>
           <div class="project-body">
             <h3 class="project-title">Ministry Website</h3>
-            <p class="project-desc">
-              A full ministry website for Wordsword of God Church featuring
-              a dark-gold aesthetic, sermon archives, ministry timeline,
-              books section, and event flyers — hosted on GitHub Pages.
-            </p>
-            <div class="project-stack">
-              <span class="stack-tag">HTML</span>
-              <span class="stack-tag">CSS</span>
-              <span class="stack-tag">GitHub Pages</span>
-            </div>
+            <p class="project-desc">Full ministry website for Wordsword of God Church — dark-gold aesthetic, sermon archives, ministry timeline, books section, and event flyers on GitHub Pages.</p>
+            <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">CSS</span><span class="stack-tag">GitHub Pages</span></div>
           </div>
         </div>
 
@@ -1080,120 +710,39 @@
     </div>
   </section>
 
-  <!-- ── GALLERY ─────────────────────────────────────────────────── -->
+  <!-- ══════════════════════════ GALLERY ══════════════════════════ -->
   <section id="gallery">
     <div class="section-inner">
       <div class="section-label reveal">Gallery</div>
       <h2 class="section-title reveal">Our <em>Work</em> & Workspace</h2>
       <div class="divider reveal"></div>
       <div class="gallery-grid">
-        <div class="gallery-item reveal" style="background: linear-gradient(135deg, #1a1a1a, #111);">
-          <span class="gallery-item-icon">💻</span>
-          <div class="gallery-overlay"></div>
-          <div class="gallery-item-label">Laptop Setup — Development Environment</div>
-        </div>
-        <div class="gallery-item reveal reveal-delay-1" style="background: linear-gradient(135deg, #141a14, #0d0d0d);">
-          <span class="gallery-item-icon">📱</span>
-          <div class="gallery-overlay"></div>
-          <div class="gallery-item-label">Phone Sales & Consultation</div>
-        </div>
-        <div class="gallery-item reveal reveal-delay-2" style="background: linear-gradient(135deg, #1a1614, #0d0d0d);">
-          <span class="gallery-item-icon">☀️</span>
-          <div class="gallery-overlay"></div>
-          <div class="gallery-item-label">Solar Installation Site</div>
-        </div>
-        <div class="gallery-item reveal reveal-delay-3" style="background: linear-gradient(135deg, #14141a, #0d0d0d);">
-          <span class="gallery-item-icon">🔧</span>
-          <div class="gallery-overlay"></div>
-          <div class="gallery-item-label">Tech Repairs & Support</div>
-        </div>
-        <div class="gallery-item reveal reveal-delay-4" style="background: linear-gradient(135deg, #1a1a14, #0d0d0d);">
-          <span class="gallery-item-icon">🌐</span>
-          <div class="gallery-overlay"></div>
-          <div class="gallery-item-label">Web Project Delivery</div>
-        </div>
+        <div class="gallery-item reveal" style="background:linear-gradient(135deg,#1a1a1a,#111);"><span class="gallery-item-icon">💻</span><div class="gallery-overlay"></div><div class="gallery-item-label">Laptop Setup — Development Environment</div></div>
+        <div class="gallery-item reveal reveal-delay-1" style="background:linear-gradient(135deg,#141a14,#0d0d0d);"><span class="gallery-item-icon">📱</span><div class="gallery-overlay"></div><div class="gallery-item-label">Phone Sales & Consultation</div></div>
+        <div class="gallery-item reveal reveal-delay-2" style="background:linear-gradient(135deg,#1a1614,#0d0d0d);"><span class="gallery-item-icon">☀️</span><div class="gallery-overlay"></div><div class="gallery-item-label">Solar Installation Site</div></div>
+        <div class="gallery-item reveal reveal-delay-3" style="background:linear-gradient(135deg,#14141a,#0d0d0d);"><span class="gallery-item-icon">🔧</span><div class="gallery-overlay"></div><div class="gallery-item-label">Tech Repairs & Support</div></div>
+        <div class="gallery-item reveal reveal-delay-4" style="background:linear-gradient(135deg,#1a1a14,#0d0d0d);"><span class="gallery-item-icon">🌐</span><div class="gallery-overlay"></div><div class="gallery-item-label">Web Project Delivery</div></div>
       </div>
     </div>
   </section>
 
-  <!-- ── SERVICES ────────────────────────────────────────────────── -->
+  <!-- ══════════════════════════ SERVICES ══════════════════════════ -->
   <section id="services">
     <div class="section-inner">
       <div class="section-label reveal">What We Offer</div>
       <h2 class="section-title reveal">Our <em>Services</em></h2>
-      <p class="section-sub reveal">
-        From hardware to code to solar systems — we cover the full spectrum of
-        tech needs for individuals and businesses.
-      </p>
+      <p class="section-sub reveal">From hardware to code to solar systems — we cover the full spectrum of tech needs.</p>
       <div class="divider reveal"></div>
       <div class="services-grid">
-
-        <div class="service-card reveal">
-          <div class="service-icon">📱</div>
-          <h3 class="service-title">Device Sales</h3>
-          <p class="service-desc">
-            Quality phones, laptops, and accessories — sourced reliably,
-            sold honestly. We help you find the right device for your needs and budget.
-          </p>
-          <ul class="service-features">
-            <li>Smartphones & iPhones</li>
-            <li>Laptops & Accessories</li>
-            <li>Device Assessment & Valuation</li>
-            <li>Warranty Advice</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal reveal-delay-1">
-          <div class="service-icon">🔧</div>
-          <h3 class="service-title">Tech Support</h3>
-          <p class="service-desc">
-            Fast, reliable technical support for software issues, hardware
-            problems, network setup, and general IT troubleshooting.
-          </p>
-          <ul class="service-features">
-            <li>Software Troubleshooting</li>
-            <li>Network & WiFi Setup</li>
-            <li>Data Recovery</li>
-            <li>System Optimization</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal reveal-delay-2">
-          <div class="service-icon">🌐</div>
-          <h3 class="service-title">Web Development</h3>
-          <p class="service-desc">
-            Custom websites and web applications built for performance,
-            responsiveness, and real-world usability — from landing pages
-            to full-stack platforms.
-          </p>
-          <ul class="service-features">
-            <li>Business Websites</li>
-            <li>Web Applications & Dashboards</li>
-            <li>Blockchain Integrations</li>
-            <li>GitHub Pages Hosting</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal reveal-delay-3">
-          <div class="service-icon">☀️</div>
-          <h3 class="service-title">Solar Solutions</h3>
-          <p class="service-desc">
-            Energy sizing calculators, inventory management tools, and digital
-            infrastructure for solar businesses and off-grid households.
-          </p>
-          <ul class="service-features">
-            <li>Load Analysis & Sizing</li>
-            <li>Custom Calculator Tools</li>
-            <li>Inventory Tracking Systems</li>
-            <li>Client Portal Dashboards</li>
-          </ul>
-        </div>
-
+        <div class="service-card reveal"><div class="service-icon">📱</div><h3 class="service-title">Device Sales</h3><p class="service-desc">Quality phones, laptops, and accessories — sourced reliably, sold honestly.</p><ul class="service-features"><li>Smartphones & iPhones</li><li>Laptops & Accessories</li><li>Device Assessment & Valuation</li><li>Warranty Advice</li></ul></div>
+        <div class="service-card reveal reveal-delay-1"><div class="service-icon">🔧</div><h3 class="service-title">Tech Support</h3><p class="service-desc">Fast, reliable technical support for software issues, hardware problems, and general IT.</p><ul class="service-features"><li>Software Troubleshooting</li><li>Network & WiFi Setup</li><li>Data Recovery</li><li>System Optimization</li></ul></div>
+        <div class="service-card reveal reveal-delay-2"><div class="service-icon">🌐</div><h3 class="service-title">Web Development</h3><p class="service-desc">Custom websites and web apps built for performance, responsiveness, and usability.</p><ul class="service-features"><li>Business Websites</li><li>Web Applications & Dashboards</li><li>Blockchain Integrations</li><li>GitHub Pages Hosting</li></ul></div>
+        <div class="service-card reveal reveal-delay-3"><div class="service-icon">☀️</div><h3 class="service-title">Solar Solutions</h3><p class="service-desc">Energy sizing tools, inventory management, and digital infrastructure for solar businesses.</p><ul class="service-features"><li>Load Analysis & Sizing</li><li>Custom Calculator Tools</li><li>Inventory Tracking Systems</li><li>Client Portal Dashboards</li></ul></div>
       </div>
     </div>
   </section>
 
-  <!-- ── CONTACT ─────────────────────────────────────────────────── -->
+  <!-- ══════════════════════════ CONTACT ══════════════════════════ -->
   <section id="contact">
     <div class="section-inner">
       <div class="section-label reveal">Get in Touch</div>
@@ -1201,150 +750,138 @@
       <div class="divider reveal"></div>
       <div class="contact-grid">
         <div class="contact-info">
-          <p class="reveal">
-            Have a project in mind, need tech support, or looking for a reliable
-            device? Reach out — we respond fast and we get things done.
-          </p>
+          <p class="reveal">Have a project in mind, need tech support, or looking for a reliable device? Reach out — we respond fast and we get things done.</p>
           <div class="contact-channels">
             <a href="https://wa.me/2348155586606" target="_blank" rel="noopener" class="channel-btn reveal">
               <div class="channel-icon wa">💬</div>
-              <div class="channel-meta">
-                <div class="channel-label">WhatsApp</div>
-                <div class="channel-value">+234 815 558 6606</div>
-              </div>
-              <span style="color:var(--muted); font-size:0.9rem;">→</span>
+              <div class="channel-meta"><div class="channel-label">WhatsApp</div><div class="channel-value">+234 815 558 6606</div></div>
+              <span style="color:var(--muted);">→</span>
             </a>
             <a href="mailto:hello@bmstech.ng" class="channel-btn reveal reveal-delay-1">
               <div class="channel-icon mail">✉️</div>
-              <div class="channel-meta">
-                <div class="channel-label">Email</div>
-                <div class="channel-value">hello@bmstech.ng</div>
-              </div>
-              <span style="color:var(--muted); font-size:0.9rem;">→</span>
+              <div class="channel-meta"><div class="channel-label">Email</div><div class="channel-value">hello@bmstech.ng</div></div>
+              <span style="color:var(--muted);">→</span>
             </a>
           </div>
         </div>
-
         <div class="contact-form reveal reveal-delay-2">
           <div id="formContent">
             <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="fname">First Name</label>
-                <input class="form-input" id="fname" type="text" placeholder="John" />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="lname">Last Name</label>
-                <input class="form-input" id="lname" type="text" placeholder="Doe" />
-              </div>
+              <div class="form-group"><label class="form-label" for="fname">First Name</label><input class="form-input" id="fname" type="text" placeholder="John"/></div>
+              <div class="form-group"><label class="form-label" for="lname">Last Name</label><input class="form-input" id="lname" type="text" placeholder="Doe"/></div>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="email">Email Address</label>
-              <input class="form-input" id="email" type="email" placeholder="you@example.com" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="subject">Subject</label>
-              <input class="form-input" id="subject" type="text" placeholder="Web development project..." />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="message">Message</label>
-              <textarea class="form-textarea" id="message" placeholder="Tell us about your project or request..."></textarea>
-            </div>
+            <div class="form-group"><label class="form-label" for="email">Email Address</label><input class="form-input" id="email" type="email" placeholder="you@example.com"/></div>
+            <div class="form-group"><label class="form-label" for="subject">Subject</label><input class="form-input" id="subject" type="text" placeholder="Web development project..."/></div>
+            <div class="form-group"><label class="form-label" for="message">Message</label><textarea class="form-textarea" id="message" placeholder="Tell us about your project..."></textarea></div>
             <button class="form-submit" onclick="handleFormSubmit()">Send Message ✉</button>
           </div>
-          <div class="form-success" id="formSuccess">
-            ✅ Message received! We'll be in touch shortly.
-          </div>
+          <div class="form-success" id="formSuccess">✅ Message received! We'll be in touch shortly.</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── FOOTER ──────────────────────────────────────────────────── -->
+  <!-- FOOTER -->
   <footer>
     <div class="footer-inner">
-      <div>
-        <div class="footer-logo">BMS TECH</div>
-        <div class="footer-tagline">Tech Support · Web Dev · Device Consulting</div>
-      </div>
+      <div><div class="footer-logo">BMS TECH</div><div class="footer-tagline">Tech Support · Web Dev · Device Consulting</div></div>
       <div class="footer-links">
-        <a href="#about">About</a>
-        <a href="#projects">Projects</a>
-        <a href="#services">Services</a>
-        <a href="https://wa.me/2348155586606" target="_blank">WhatsApp</a>
-        <a href="#contact">Contact</a>
+        <a href="#about">About</a><a href="#projects">Projects</a><a href="#services">Services</a>
+        <a href="https://wa.me/2348155586606" target="_blank">WhatsApp</a><a href="#contact">Contact</a>
       </div>
     </div>
-    <div class="footer-inner">
-      <div class="footer-copy">
-        © <span id="year"></span> BMS Tech. All rights reserved. Built with care in Nigeria 🇳🇬
-      </div>
-    </div>
+    <div class="footer-inner"><div class="footer-copy">© <span id="year"></span> BMS Tech. All rights reserved. Built with care in Nigeria 🇳🇬</div></div>
   </footer>
 
-  <!-- ── BACK TO TOP ──────────────────────────────────────────────── -->
   <button id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
 
-  <!-- ─────────────────────────── SCRIPTS ────────────────────────── -->
   <script>
-    // ── Loader ──────────────────────────────────────────────────────
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loader').classList.add('hidden');
-      }, 1800);
+    /* ── Loader ── */
+    window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('hidden'),1800));
+    document.getElementById('year').textContent=new Date().getFullYear();
+
+    /* ── Navbar ── */
+    window.addEventListener('scroll',()=>{
+      const s=window.scrollY>60;
+      document.getElementById('navbar').classList.toggle('scrolled',s);
+      document.getElementById('backTop').classList.toggle('show',s);
     });
 
-    // ── Year ────────────────────────────────────────────────────────
-    document.getElementById('year').textContent = new Date().getFullYear();
+    /* ── Mobile menu ── */
+    const ham=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu');
+    ham.addEventListener('click',()=>{ham.classList.toggle('open');mm.classList.toggle('open');});
+    document.querySelectorAll('.mobile-link').forEach(l=>l.addEventListener('click',()=>{ham.classList.remove('open');mm.classList.remove('open');}));
 
-    // ── Navbar scroll ───────────────────────────────────────────────
-    const navbar = document.getElementById('navbar');
-    const backTop = document.getElementById('backTop');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 60) {
-        navbar.classList.add('scrolled');
-        backTop.classList.add('show');
-      } else {
-        navbar.classList.remove('scrolled');
-        backTop.classList.remove('show');
-      }
-    });
+    /* ── Scroll reveal ── */
+    const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}}),{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-    // ── Mobile menu ─────────────────────────────────────────────────
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      mobileMenu.classList.toggle('open');
-    });
-    document.querySelectorAll('.mobile-link').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburger.classList.remove('open');
-        mobileMenu.classList.remove('open');
+    /* ══ HERO EMULATOR ══ */
+    let emuIdx=0,emuTotal=3,emuTimer;
+    function goToSlide(idx){
+      emuIdx=idx;
+      ['desktopScreen','mobileScreen'].forEach(id=>{
+        document.querySelectorAll('#'+id+' .emu-slide').forEach((s,i)=>s.classList.toggle('active',i===idx));
       });
-    });
+      document.querySelectorAll('#desktopDots .emu-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+      clearInterval(emuTimer);
+      emuTimer=setInterval(()=>goToSlide((emuIdx+1)%emuTotal),3500);
+    }
+    emuTimer=setInterval(()=>goToSlide((emuIdx+1)%emuTotal),3500);
 
-    // ── Scroll reveal ────────────────────────────────────────────────
-    const revealEls = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
+    /* ══ PROJECT CAROUSELS ══ */
+    const cState={};
+    const cImages={}; // {cardIdx: {slideIdx: dataURL}}
+    for(let i=0;i<6;i++){cState[i]=0;cImages[i]={};}
+
+    function cUpdate(card,idx){
+      const slides=document.querySelectorAll('#c'+card+' .carousel-slide');
+      const dots=document.querySelectorAll('#cd'+card+' .carousel-dot');
+      const total=slides.length;
+      idx=((idx%total)+total)%total;
+      cState[card]=idx;
+      slides.forEach((s,i)=>s.classList.toggle('active',i===idx));
+      dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+      const cn=document.getElementById('cn'+card);
+      if(cn)cn.textContent=(idx+1)+' / '+total;
+    }
+    function cNext(c){cUpdate(c,cState[c]+1);}
+    function cPrev(c){cUpdate(c,cState[c]-1);}
+    function cGoto(c,i){cUpdate(c,i);}
+
+    function openUpload(c){document.getElementById('uz'+c).classList.add('visible');}
+    function closeUpload(c){document.getElementById('uz'+c).classList.remove('visible');}
+
+    function handleImg(card,slot,input){
+      if(!input.files||!input.files[0])return;
+      const reader=new FileReader();
+      reader.onload=function(e){
+        cImages[card][slot]=e.target.result;
+        const thumb=document.getElementById('ut'+card+'-'+slot);
+        if(thumb){thumb.src=e.target.result;thumb.style.display='block';}
+        const emoji=thumb&&thumb.previousElementSibling;
+        if(emoji&&emoji.classList.contains('slot-emoji'))emoji.style.opacity='0';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function applyAndClose(card){
+      const slides=document.querySelectorAll('#c'+card+' .carousel-slide');
+      Object.keys(cImages[card]).forEach(slot=>{
+        const idx=parseInt(slot);
+        const url=cImages[card][slot];
+        if(slides[idx]){
+          slides[idx].innerHTML='<img src="'+url+'" alt="Screenshot '+(idx+1)+'" style="width:100%;height:100%;object-fit:cover;"/>';
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach(el => observer.observe(el));
+      closeUpload(card);
+    }
 
-    // ── Form submit (UI-only) ────────────────────────────────────────
-    function handleFormSubmit() {
-      const fields = ['fname','lname','email','message'];
-      const allFilled = fields.every(id => document.getElementById(id).value.trim() !== '');
-      if (!allFilled) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-      document.getElementById('formContent').style.display = 'none';
-      document.getElementById('formSuccess').style.display = 'block';
+    /* ── Contact form ── */
+    function handleFormSubmit(){
+      if(['fname','lname','email','message'].some(id=>!document.getElementById(id).value.trim())){alert('Please fill in all required fields.');return;}
+      document.getElementById('formContent').style.display='none';
+      document.getElementById('formSuccess').style.display='block';
     }
   </script>
 </body>
